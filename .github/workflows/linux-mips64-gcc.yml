@@ -5,7 +5,8 @@ on:
     branches:
       - main  # 更改为您需要触发构建的分支
 env:
-  VERSION: 'fips-2.0.16'  # 修改为您想要编译的openssl版本
+  VERSION: '1.0.2'
+  TAG: 'k'
 jobs:
   build-openssl:
     runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
@@ -21,14 +22,14 @@ jobs:
 
     - name: Download and unpack OpenSSL source
       run: |
-        wget https://www.openssl.org/source/openssl-$VERSION.tar.gz
-        tar -xzvf openssl-$VERSION.tar.gz
+        wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
+        tar -xzvf openssl-$VERSION$TAG.tar.gz
 
     - name: Configure OpenSSL for mips64el
       run: |
-        cd openssl-$VERSION
+        cd openssl-$VERSION$TAG
         chmod +x Configure
-        ./Configure linux-generic32 --prefix=/tmp/openssl-mips64-fips fips shared \
+        ./Configure linux-generic32 --prefix=/tmp/openssl-mips64 shared \
                 -mips64 -Wa,--noexecstack \
                 -DL_ENDIAN \
                 -DOPENSSL_USE_NODELETE \
@@ -46,10 +47,10 @@ jobs:
 
     - name: Verify installation
       run: |
-        /tmp/openssl-mips64el/bin/openssl version
+        /tmp/openssl-mips64/bin/openssl version
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: openssl-mips64el
-        path: /tmp/openssl-mips64el/
+        name: openssl-mips64
+        path: /tmp/openssl-mips64/
