@@ -1,0 +1,57 @@
+name: linux-x64-gcc
+
+on:
+  push:
+    branches:
+      - main  # 更改为您需要触发构建的分支
+env:
+  VERSION: 'fips-2.0.16'  # 修改为您想要编译的openssl版本
+jobs:
+  build-openssl:
+    runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies and toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential perl libssl-dev zlib1g-dev
+
+    - name: Download and unpack OpenSSL source
+      run: |
+        wget https://www.openssl.org/source/openssl-$VERSION.tar.gz
+        tar -xzvf openssl-$VERSION.tar.gz
+
+    - name: Configure OpenSSL for x64
+      run: |
+        cd openssl-$VERSION
+        ./config --prefix=/tmp/openssl-x64 \
+                         no-shared \
+                         enable-ec_nistp_64_gcc_128 \
+                         -march=native \
+                         -Wa,--noexecstack \
+                         -DL_ENDIAN \
+                         -DOPENSSL_USE_NODELETE \
+                         -fPIC
+
+    - name: Compile OpenSSL
+      run: |
+        cd openssl-$VERSION
+        make -j$(nproc)
+
+    - name: Install OpenSSL
+      run: |
+        cd openssl-$VERSION
+        make install_sw
+
+    - name: Verify installation
+      run: |
+        /tmp/openssl-x64/bin/openssl version
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: openssl-mips64el
+        path: /tmp/openssl-x64/
