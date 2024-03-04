@@ -5,7 +5,7 @@ on:
     branches:
       - main  # 更改为您需要触发构建的分支
 env:
-  VERSION: 'fips-2.0.16'  # 修改为您想要编译的openssl版本
+  VERSION: '1.1.1k'  # 修改为您想要编译的openssl版本
 jobs:
   build-openssl:
     runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
