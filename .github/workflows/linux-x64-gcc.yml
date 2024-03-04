@@ -42,5 +42,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: openssl-mips64el
+        name: openssl-x64
         path: /tmp/openssl-x64/
