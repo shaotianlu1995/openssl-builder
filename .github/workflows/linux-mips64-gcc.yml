@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main  # 更改为您需要触发构建的分支
-
+env:
+  VERSION: "fips-2.0.16"  # 修改为您想要编译的openssl版本
 jobs:
   build-openssl:
     runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
@@ -20,22 +21,23 @@ jobs:
 
     - name: Download and unpack OpenSSL source
       run: |
-        VERSION="fips-2.0.16"  # 修改为您想要编译的openssl版本
-        wget https://www.openssl.org/source/openssl-$VERSION.tar.gz
-        tar -xzvf openssl-$VERSION.tar.gz
-        cd openssl-$VERSION
+        wget https://www.openssl.org/source/openssl-env.VERSION.tar.gz
+        tar -xzvf openssl-env.VERSION.tar.gz
 
     - name: Configure OpenSSL for mips64el
       run: |
-        cd openssl-$VERSION
-        pwd
+        cd openssl-env.VERSION
         ./config --prefix=/tmp/openssl-mips64el fips shared enable-ec_nistp_64_gcc_128 -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC
 
     - name: Compile OpenSSL
-      run: make -j$(nproc)
+      run: |
+        cd openssl-env.VERSION
+        make -j$(nproc)
 
     - name: Install OpenSSL
-      run: make install_sw
+      run: |
+        cd openssl-env.VERSION
+        make install_sw
 
     - name: Verify installation
       run: |
