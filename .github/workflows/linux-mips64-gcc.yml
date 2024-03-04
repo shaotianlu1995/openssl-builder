@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies and toolchain
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 build-essential perl libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+        sudo apt-get install -y build-essential gcc-mips64el-linux-gnuabi64 perl libssl-dev zlib1g-dev
 
     - name: Download and unpack OpenSSL source
       run: |
@@ -27,19 +27,16 @@ jobs:
     - name: Configure OpenSSL for mips64el
       run: |
         cd openssl-$VERSION
-        export CC=mips64el-linux-gnuabi64-gcc
-        export CFLAGS="-mcpu=mips64r2 -Wa,--noexecstack"
-        ./config --prefix=/tmp/openssl-mips64 \
-                  no-shared \
-                  enable-ec_nistp_64_gcc_128 \
-                  -DL_ENDIAN \
-                  -DOPENSSL_USE_NODELETE \
-                  -fPIC
+        ./Configure linux-generic32 --prefix=/tmp/openssl-mips64-fips fips shared \
+                -mips64 -Wa,--noexecstack \
+                -DL_ENDIAN \
+                -DOPENSSL_USE_NODELETE \
+                -fPIC
 
     - name: Compile OpenSSL
       run: |
         cd openssl-$VERSION
-        make -j$(nproc) CC=mips64el-linux-gnuabi64-gcc
+        make CC=mips64el-linux-gnuabi64-gcc
 
     - name: Install OpenSSL
       run: |
