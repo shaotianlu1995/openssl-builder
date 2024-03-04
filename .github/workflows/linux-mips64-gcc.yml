@@ -35,7 +35,7 @@ jobs:
              -Wa,--noexecstack \
              -DL_ENDIAN \
              -DOPENSSL_USE_NODELETE \
-             -fPIC \
+             -fPIC
           CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ AR=mipsel-linux-gnu-ar RANLIB=mipsel-linux-gnu-ranlib
 
     - name: Compile OpenSSL
