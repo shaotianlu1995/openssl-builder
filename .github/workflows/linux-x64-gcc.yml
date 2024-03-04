@@ -39,10 +39,6 @@ jobs:
         cd openssl-$VERSION
         make install_sw
 
-    - name: Verify installation
-      run: |
-        /tmp/openssl-x64/bin/openssl version
-
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
