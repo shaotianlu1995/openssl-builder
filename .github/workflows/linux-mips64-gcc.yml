@@ -29,6 +29,7 @@ jobs:
         cd openssl-$VERSION
         ./config --prefix=/tmp/openssl-mips64 no-shared enable-ec_nistp_64_gcc_128 \
           -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC \
+          --cross-compile-prefix=mipsel-linux-gnu- \
           CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ AR=mipsel-linux-gnu-ar RANLIB=mipsel-linux-gnu-ranlib
 
     - name: Compile OpenSSL
