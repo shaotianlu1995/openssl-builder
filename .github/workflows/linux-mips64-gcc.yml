@@ -37,12 +37,12 @@ jobs:
 
     - name: Compile OpenSSL
       run: |
-        cd openssl-$VERSION
+        cd openssl-$VERSION$TAG
         make CC=mips64el-linux-gnuabi64-gcc
 
     - name: Install OpenSSL
       run: |
-        cd openssl-$VERSION
+        cd openssl-$VERSION$TAG
         make install_sw
 
     - name: Verify installation
