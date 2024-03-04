@@ -27,6 +27,7 @@ jobs:
     - name: Configure OpenSSL for mips64el
       run: |
         cd openssl-$VERSION
+        chmod +x Configure
         ./Configure linux-generic32 --prefix=/tmp/openssl-mips64-fips fips shared \
                 -mips64 -Wa,--noexecstack \
                 -DL_ENDIAN \
