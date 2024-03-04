@@ -27,7 +27,7 @@ jobs:
     - name: Configure OpenSSL for x64
       run: |
         cd openssl-$VERSION
-        ./config fips shared --prefix=/tmp/openssl-x64
+        ./config shared --prefix=/tmp/openssl-x64
 
     - name: Compile OpenSSL
       run: |
