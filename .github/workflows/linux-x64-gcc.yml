@@ -27,14 +27,7 @@ jobs:
     - name: Configure OpenSSL for x64
       run: |
         cd openssl-$VERSION
-        ./config --prefix=/tmp/openssl-x64 \
-                         no-shared \
-                         enable-ec_nistp_64_gcc_128 \
-                         -march=native \
-                         -Wa,--noexecstack \
-                         -DL_ENDIAN \
-                         -DOPENSSL_USE_NODELETE \
-                         -fPIC
+        ./config fips shared --prefix=/tmp/openssl-x64
 
     - name: Compile OpenSSL
       run: |
