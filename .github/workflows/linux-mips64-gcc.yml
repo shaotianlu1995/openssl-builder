@@ -27,8 +27,8 @@ jobs:
 
     - name: Configure OpenSSL for mips64el
       run: |
+        cd openssl-$VERSION
         pwd
-        ls -all
         ./config --prefix=/tmp/openssl-mips64el fips shared enable-ec_nistp_64_gcc_128 -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC
 
     - name: Compile OpenSSL
