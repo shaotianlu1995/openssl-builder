@@ -24,12 +24,14 @@ jobs:
       run: |
         wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
         tar -xzvf openssl-$VERSION$TAG.tar.gz
+        wget https://www.openssl.org/source/openssl-fips-2.0.16.tar.gz
+        tar xvfz openssl-fips-2.0.16.tar.gz
 
     - name: Configure OpenSSL for aarch64
       run: |
         cd openssl-$VERSION$TAG
         chmod +x Configure
-        ./Configure linux-aarch64 --prefix=/tmp/openssl-aarch64 shared \
+        ./Configure linux-aarch64 --prefix=/tmp/openssl-aarch64 fips shared \
                   -Wa,--noexecstack \
                   -DL_ENDIAN \
                   -DOPENSSL_USE_NODELETE \
@@ -39,6 +41,13 @@ jobs:
       run: |
         cd openssl-$VERSION$TAG
         make CC=aarch64-linux-gnu-gcc
+
+    - name: Build OpenSSL-Fips for aarch64
+      run: |
+        cd openssl-fips-2.0.16
+        chmod +x Configure
+        ./config
+        make
 
     - name: Install OpenSSL
       run: |
