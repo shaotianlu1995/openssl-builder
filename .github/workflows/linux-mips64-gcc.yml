@@ -27,8 +27,9 @@ jobs:
     - name: Configure OpenSSL for mips64el
       run: |
         cd openssl-$VERSION
-        export CC=mips64el-linux-gnuabi64-gcc
-        ./Configure linux-mips64el
+        ./config --prefix=/tmp/openssl-mips64 no-shared enable-ec_nistp_64_gcc_128 \
+          -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC \
+          CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ AR=mipsel-linux-gnu-ar RANLIB=mipsel-linux-gnu-ranlib
 
     - name: Compile OpenSSL
       run: |
