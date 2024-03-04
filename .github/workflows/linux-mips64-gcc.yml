@@ -1,0 +1,46 @@
+name: linux-mips64-gcc
+
+on:
+  push:
+    branches:
+      - main  # 更改为您需要触发构建的分支
+
+jobs:
+  build-openssl:
+    runs-on: ubuntu-latest  # 或者选择其他支持的Ubuntu版本
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies and toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-mips64el-linux-gnuabi64 build-essential perl libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+
+    - name: Download and unpack OpenSSL source
+      run: |
+        VERSION="fips-2.0.16"  # 修改为您想要编译的openssl版本
+        wget https://www.openssl.org/source/openssl-$VERSION.tar.gz
+        tar -xzvf openssl-$VERSION.tar.gz
+        cd openssl-$VERSION
+
+    - name: Configure OpenSSL for mips64el
+      run: |
+        ./config --prefix=/tmp/openssl-mips64el no-shared enable-ec_nistp_64_gcc_128 -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC
+
+    - name: Compile OpenSSL
+      run: make -j$(nproc)
+
+    - name: Install OpenSSL
+      run: make install_sw
+
+    - name: Verify installation
+      run: |
+        /tmp/openssl-mips64el/bin/openssl version
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: openssl-mips64el
+        path: /tmp/openssl-mips64el/
