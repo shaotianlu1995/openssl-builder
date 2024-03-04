@@ -24,10 +24,11 @@ jobs:
         wget https://www.openssl.org/source/openssl-$VERSION.tar.gz
         tar -xzvf openssl-$VERSION.tar.gz
         cd openssl-$VERSION
+        pwd
 
     - name: Configure OpenSSL for mips64el
       run: |
-        ./config --prefix=/tmp/openssl-mips64el no-shared enable-ec_nistp_64_gcc_128 -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC
+        ./config --prefix=/tmp/openssl-mips64el fips shared enable-ec_nistp_64_gcc_128 -march=mips64 -Wa,--noexecstack -DL_ENDIAN -DOPENSSL_USE_NODELETE -fPIC
 
     - name: Compile OpenSSL
       run: make -j$(nproc)
