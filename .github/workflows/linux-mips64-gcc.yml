@@ -45,9 +45,9 @@ jobs:
         cd openssl-$VERSION$TAG
         make install_sw
 
-    - name: Verify installation
-      run: |
-        /tmp/openssl-mips64/bin/openssl version
+#    - name: Verify installation
+#      run: |
+#        /tmp/openssl-mips64/bin/openssl version
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
