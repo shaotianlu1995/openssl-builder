@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-openssl:
-    runs-on: ubuntu-latest  # 或者选择其他支持的Ubuntu版本
+    runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
 
     steps:
     - name: Checkout code
