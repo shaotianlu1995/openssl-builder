@@ -39,7 +39,7 @@ jobs:
     - name: Compile OpenSSL
       run: |
         cd openssl-$VERSION
-        make -j$(nproc)
+        make -j$(nproc) CC=mips64el-linux-gnuabi64-gcc
 
     - name: Install OpenSSL
       run: |
