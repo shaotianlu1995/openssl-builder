@@ -29,6 +29,28 @@ jobs:
 
     - name: Configure OpenSSL for aarch64
       run: |
+        cd openssl-$VERSION$TAG
+        export CC=aarch64-linux-gnu-gcc
+        export CXX=aarch64-linux-gnu-g++
+        chmod +x Configure
+        ./Configure linux-generic32 --prefix=/tmp/openssl-aarch64 shared \
+                  -Wa,--noexecstack \
+                  -DL_ENDIAN \
+                  -DOPENSSL_USE_NODELETE \
+                  -fPIC
+    
+    - name: Compile OpenSSL
+      run: |
+        cd openssl-$VERSION$TAG
+        make CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++
+    
+    - name: Install OpenSSL
+      run: |
+        cd openssl-$VERSION$TAG
+        make install_sw
+    
+    - name: Configure FIPS module
+      run: |
         cd openssl-fips-2.0.16
         export CC=aarch64-linux-gnu-gcc
         export CXX=aarch64-linux-gnu-g++
@@ -38,13 +60,13 @@ jobs:
                   -DL_ENDIAN \
                   -DOPENSSL_USE_NODELETE \
                   -fPIC
-
-    - name: Compile OpenSSL
+    
+    - name: Compile FIPS module
       run: |
         cd openssl-fips-2.0.16
-        make CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ fips_standalone_sha1
-
-    - name: Install OpenSSL
+        make CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++
+    
+    - name: Install FIPS module
       run: |
         cd openssl-fips-2.0.16
         make install_sw
