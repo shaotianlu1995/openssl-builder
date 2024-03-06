@@ -64,4 +64,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: openssl-x64
-        path: $INSTALL_PREFIX/
+        path: /tmp/openssl-x64/tmp/openssl-x64/
