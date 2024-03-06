@@ -6,7 +6,8 @@ on:
       - main  # 更改为您需要触发构建的分支
 
 env:
-  OPENSSL_VERSION: '1.0.2k'
+  VERSION: '1.0.2'
+  TAG: 'k'
   OPENSSL_FIPS_VERSION: '2.0.16'
   INSTALL_PREFIX: '/tmp/openssl-x64'
 
@@ -25,14 +26,14 @@ jobs:
 
     - name: Download and unpack OpenSSL source and FIPS module
       run: |
-        wget https://www.openssl.org/source/old/$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz
-        tar -xzvf openssl-$OPENSSL_VERSION.tar.gz
+        wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
+        tar -xzvf openssl-$VERSION$TAG.tar.gz
         wget https://www.openssl.org/source/openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
         tar -xzvf openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
 
     - name: Configure OpenSSL for FIPS
       run: |
-        cd openssl-$OPENSSL_VERSION
+        cd openssl-$VERSION$TAG
         ./config --prefix=$INSTALL_PREFIX shared \
                   -I../openssl-fips-$OPENSSL_FIPS_VERSION/include \
                   -L../openssl-fips-$OPENSSL_FIPS_MODULE/lib \
@@ -44,13 +45,13 @@ jobs:
 
     - name: Build OpenSSL (including FIPS)
       run: |
-        cd openssl-$OPENSSL_VERSION
+        cd openssl-$VERSION$TAG
         make depend
         make -j$(nproc)
 
     - name: Install OpenSSL
       run: |
-        cd openssl-$OPENSSL_VERSION
+        cd openssl-$VERSION$TAG
         make install_sw
 
     - name: Create pkg-config files (optional)
