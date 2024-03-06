@@ -53,6 +53,7 @@ jobs:
       run: |
         cd openssl-$VERSION$TAG
         make install_sw
+        make DESTDIR=$INSTALL_PREFIX install
         ls -R $INSTALL_PREFIX
 
     #- name: Create pkg-config files (optional)
