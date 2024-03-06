@@ -54,9 +54,9 @@ jobs:
         cd openssl-$VERSION$TAG
         make install_sw
 
-    - name: Create pkg-config files (optional)
-      run: |
-        cp $INSTALL_PREFIX/lib/pkgconfig/* $INSTALL_PREFIX/share/pkgconfig/
+    #- name: Create pkg-config files (optional)
+    #  run: |
+    #   cp $INSTALL_PREFIX/lib/pkgconfig/* $INSTALL_PREFIX/share/pkgconfig/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
