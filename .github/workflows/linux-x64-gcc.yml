@@ -24,7 +24,19 @@ jobs:
       run: |
         wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
         tar -xzvf openssl-$VERSION$TAG.tar.gz
+        wget https://www.openssl.org/source/openssl-fips-2.0.16.tar.gz
+        tar -xzvf openssl-fips-2.0.16.tar.gz
 
+    - name: Configure OpenSSL for FIPS
+      run: |
+        cd openssl-fips-2.0.16
+        ./config fips shared
+
+    - name: Build OpenSSL for FIPS
+      run: |
+        cd openssl-fips-2.0.16
+        make
+        
     - name: Configure OpenSSL for x64
       run: |
         cd openssl-$VERSION$TAG
@@ -42,7 +54,8 @@ jobs:
     - name: Install OpenSSL
       run: |
         cd openssl-$VERSION$TAG
-        make install_sw
+        make install
+        make install_fips
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
