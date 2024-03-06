@@ -1,15 +1,18 @@
-name: linux-x64-gcc
+name: Linux-x64-GCC with OpenSSL FIPS
 
 on:
   push:
     branches:
       - main  # 更改为您需要触发构建的分支
+
 env:
-  VERSION: '1.0.2'
-  TAG: 'k'
+  OPENSSL_VERSION: '1.0.2k'
+  OPENSSL_FIPS_VERSION: '2.0.16'
+  INSTALL_PREFIX: '/tmp/openssl-x64'
+
 jobs:
   build-openssl:
-    runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
+    runs-on: ubuntu-20.04  # 或选择其他支持的Ubuntu版本
 
     steps:
     - name: Checkout code
@@ -20,45 +23,42 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential perl libssl-dev zlib1g-dev
 
-    - name: Download and unpack OpenSSL source
+    - name: Download and unpack OpenSSL source and FIPS module
       run: |
-        wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
-        tar -xzvf openssl-$VERSION$TAG.tar.gz
-        wget https://www.openssl.org/source/openssl-fips-2.0.16.tar.gz
-        tar -xzvf openssl-fips-2.0.16.tar.gz
+        wget https://www.openssl.org/source/old/$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz
+        tar -xzvf openssl-$OPENSSL_VERSION.tar.gz
+        wget https://www.openssl.org/source/openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
+        tar -xzvf openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
 
     - name: Configure OpenSSL for FIPS
       run: |
-        cd openssl-fips-2.0.16
-        ./config fips shared
-
-    - name: Build OpenSSL for FIPS
-      run: |
-        cd openssl-fips-2.0.16
-        make
-        
-    - name: Configure OpenSSL for x64
-      run: |
-        cd openssl-$VERSION$TAG
-        ./config --prefix=/tmp/openssl-x64 shared \
+        cd openssl-$OPENSSL_VERSION
+        ./config --prefix=$INSTALL_PREFIX shared \
+                  -I../openssl-fips-$OPENSSL_FIPS_VERSION/include \
+                  -L../openssl-fips-$OPENSSL_FIPS_MODULE/lib \
                   -Wa,--noexecstack \
                   -DL_ENDIAN \
                   -DOPENSSL_USE_NODELETE \
-                  -fPIC
+                  -fPIC \
+                  enable-fips
 
-    - name: Compile OpenSSL
+    - name: Build OpenSSL (including FIPS)
       run: |
-        cd openssl-$VERSION$TAG
+        cd openssl-$OPENSSL_VERSION
+        make depend
         make -j$(nproc)
 
     - name: Install OpenSSL
       run: |
-        cd openssl-$VERSION$TAG
-        make install
-        make install_fips
+        cd openssl-$OPENSSL_VERSION
+        make install_sw
+
+    - name: Create pkg-config files (optional)
+      run: |
+        cp $INSTALL_PREFIX/lib/pkgconfig/* $INSTALL_PREFIX/share/pkgconfig/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: openssl-x64
-        path: /tmp/openssl-x64/
+        path: $INSTALL_PREFIX/
