@@ -32,13 +32,12 @@ jobs:
     - name: Build FIPS
       run: |
         # 设置环境变量来帮助识别目标架构和交叉编译器
-        export KERNEL_BITS=64
         export CC=aarch64-linux-gnu-gcc
         export CFLAGS="-march=armv8-a"
-        export AR=aarch64-linux-gnu-ar r
+        export AR=aarch64-linux-gnu-ar
         export RANLIB=aarch64-linux-gnu-ranlib
         cd openssl-fips-$OPENSSL_FIPS_VERSION
-        ./config --cross-compile-prefix=aarch64-linux-gnu-  --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
+        ./config --cross-compile-prefix=aarch64-linux-gnu- no-asm --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
         make CC=aarch64-linux-gnu-gcc
         make install
 
