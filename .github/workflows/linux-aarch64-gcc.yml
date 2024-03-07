@@ -32,7 +32,7 @@ jobs:
     - name: Build FIPS
       run: |
         cd openssl-fips-$OPENSSL_FIPS_VERSION
-        ./config linux-aarch64 --cross-compile-prefix=aarch64-linux-gnu-  --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
+        ./config --target=linux-aarch64 --cross-compile-prefix=aarch64-linux-gnu-  --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
         make CC=aarch64-linux-gnu-gcc
         make install
 
