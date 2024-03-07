@@ -30,38 +30,31 @@ jobs:
         tar -xzvf openssl-$VERSION$TAG.tar.gz
         wget https://www.openssl.org/source/openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
         tar -xzvf openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
+    
+    - name: Build FIPS
+      run: |
+        cd openssl-fips-$OPENSSL_FIPS_VERSION
+        ./config
+        make
+        make install
 
     - name: Configure OpenSSL for FIPS
       run: |
         cd openssl-$VERSION$TAG
-        ./config --prefix=$INSTALL_PREFIX shared \
-                  -I../openssl-fips-$OPENSSL_FIPS_VERSION/include \
-                  -L../openssl-fips-$OPENSSL_FIPS_MODULE/lib \
-                  -Wa,--noexecstack \
-                  -DL_ENDIAN \
-                  -DOPENSSL_USE_NODELETE \
-                  -fPIC \
-                  enable-fips
+        ./config fips shared
 
     - name: Build OpenSSL (including FIPS)
       run: |
         cd openssl-$VERSION$TAG
-        make depend
         make -j$(nproc)
 
     - name: Install OpenSSL
       run: |
         cd openssl-$VERSION$TAG
-        make install_sw
-        make DESTDIR=$INSTALL_PREFIX install
-        ls -R $INSTALL_PREFIX
-
-    #- name: Create pkg-config files (optional)
-    #  run: |
-    #   cp $INSTALL_PREFIX/lib/pkgconfig/* $INSTALL_PREFIX/share/pkgconfig/
-
+        make install
+        
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: openssl-x64
-        path: /tmp/openssl-x64/tmp/openssl-x64/
+        path: /usr/local/ssl
