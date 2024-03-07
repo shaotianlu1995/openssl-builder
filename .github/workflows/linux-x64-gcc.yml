@@ -34,14 +34,14 @@ jobs:
     - name: Build FIPS
       run: |
         cd openssl-fips-$OPENSSL_FIPS_VERSION
-        ./config
+        ./config --prefix=/tmp/openssl-x64/ssl/fips-2.0.16
         make
         make install
 
     - name: Configure OpenSSL for FIPS
       run: |
         cd openssl-$VERSION$TAG
-        ./config fips shared
+        ./config fips shared --with-fipsdir=/tmp/openssl-x64/ssl/fips-2.0.16
 
     - name: Build OpenSSL (including FIPS)
       run: |
