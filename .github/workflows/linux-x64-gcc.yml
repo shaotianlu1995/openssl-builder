@@ -37,15 +37,11 @@ jobs:
         ./config --prefix=/tmp/openssl-x64/ssl/fips-2.0.16
         make
         make install
-
-    - name: Check fips.h existence
-      run: |
-        find / -name "fips.h"
     
     - name: Configure OpenSSL for FIPS
       run: |
         cd openssl-$VERSION$TAG
-        ./config fips shared --with-fipsdir=/tmp/openssl-x64/ssl/fips-2.0.16
+        ./config fips shared --with-fipsdir=openssl-fips-$OPENSSL_FIPS_VERSION
 
     - name: Build OpenSSL (including FIPS)
       run: |
