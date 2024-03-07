@@ -40,8 +40,9 @@ jobs:
     
     - name: Configure OpenSSL for FIPS
       run: |
+        export CPPFLAGS="-I/tmp/openssl-x64/tmp/openssl-x64/ssl/fips-2.0.16/include"
         cd openssl-$VERSION$TAG
-        ./config fips shared --with-fipsdir=openssl-fips-$OPENSSL_FIPS_VERSION
+        ./config fips shared --with-fipsdir=/tmp/openssl-x64/tmp/openssl-x64/ssl/fips-2.0.16/
 
     - name: Build OpenSSL (including FIPS)
       run: |
