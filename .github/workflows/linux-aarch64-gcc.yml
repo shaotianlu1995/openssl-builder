@@ -40,7 +40,7 @@ jobs:
       run: |
         export CPPFLAGS="-I/tmp/openssl-aarch64/tmp/openssl-aarch64/ssl/fips-2.0.16/include"
         cd openssl-$VERSION$TAG
-        ./config linux-aarch64 fips shared --with-fipsdir=/tmp/openssl-aarch64/tmp/openssl-aarch64/ssl/fips-2.0.16/
+        ./Configure linux-aarch64 --cross-compile-prefix=aarch64-linux-gnu- fips shared --with-fipsdir=/tmp/openssl-aarch64/tmp/openssl-aarch64/ssl/fips-2.0.16/
 
     - name: Build OpenSSL (including FIPS)
       run: |
