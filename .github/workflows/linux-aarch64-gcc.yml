@@ -37,7 +37,7 @@ jobs:
         export AR=aarch64-linux-gnu-ar
         export RANLIB=aarch64-linux-gnu-ranlib
         cd openssl-fips-$OPENSSL_FIPS_VERSION
-        ./config --cross-compile-prefix=aarch64-linux-gnu- no-asm --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
+        ./Configure linux-aarch64 --cross-compile-prefix=aarch64-linux-gnu-  -march=armv8-a -D__aarch64__  no-asm --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
         make CC=aarch64-linux-gnu-gcc
         make install
 
