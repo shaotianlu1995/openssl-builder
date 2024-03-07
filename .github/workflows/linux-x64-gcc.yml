@@ -38,6 +38,10 @@ jobs:
         make
         make install
 
+    - name: Check fips.h existence
+      run: |
+        find / -name "fips.h"
+    
     - name: Configure OpenSSL for FIPS
       run: |
         cd openssl-$VERSION$TAG
