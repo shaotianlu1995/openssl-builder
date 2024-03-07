@@ -33,7 +33,7 @@ jobs:
       run: |
         cd openssl-fips-$OPENSSL_FIPS_VERSION
         ./config --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
-        make
+        make CC=aarch64-linux-gnu-gcc
         make install
 
     - name: Configure OpenSSL for aarch64
