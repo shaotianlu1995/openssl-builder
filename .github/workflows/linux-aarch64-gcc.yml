@@ -6,7 +6,9 @@ on:
       - main  # 更改为您需要触发构建的分支
 env:
   VERSION: '1.0.2'
-  TAG: 'u'
+  TAG: 'k'
+  OPENSSL_FIPS_VERSION: '2.0.16'
+  INSTALL_PREFIX: '/tmp/openssl-aarch64'
 jobs:
   build-openssl:
     runs-on: ubuntu-20.04  # 或者选择其他支持的Ubuntu版本
@@ -19,33 +21,40 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential gcc-aarch64-linux-gnu perl libssl-dev zlib1g-dev
-    - name: Download and unpack OpenSSL source
+
+    - name: Download and unpack OpenSSL source and FIPS module
       run: |
         wget https://www.openssl.org/source/old/$VERSION/openssl-$VERSION$TAG.tar.gz
         tar -xzvf openssl-$VERSION$TAG.tar.gz
+        wget https://www.openssl.org/source/openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
+        tar -xzvf openssl-fips-$OPENSSL_FIPS_VERSION.tar.gz
+
+    - name: Build FIPS
+      run: |
+        cd openssl-fips-$OPENSSL_FIPS_VERSION
+        ./config --prefix=/tmp/openssl-aarch64/ssl/fips-2.0.16
+        make
+        make install
+
     - name: Configure OpenSSL for aarch64
       run: |
+        export CPPFLAGS="-I/tmp/openssl-aarch64/tmp/openssl-aarch64/ssl/fips-2.0.16/include"
         cd openssl-$VERSION$TAG
-        chmod +x Configure
-        ./Configure linux-aarch64 --prefix=/tmp/openssl-aarch64 shared \
-                  -Wa,--noexecstack \
-                  -DL_ENDIAN \
-                  -DOPENSSL_USE_NODELETE \
-                  -fPIC
-    - name: Compile OpenSSL
+        ./config linux-aarch64 fips shared --with-fipsdir=/tmp/openssl-aarch64/tmp/openssl-aarch64/ssl/fips-2.0.16/
+
+    - name: Build OpenSSL (including FIPS)
       run: |
         cd openssl-$VERSION$TAG
-        make CC=aarch64-linux-gnu-gcc
+        make -j$(nproc) CC=aarch64-linux-gnu-gcc
+
     - name: Install OpenSSL
       run: |
         cd openssl-$VERSION$TAG
-        make install_sw
-#    - name: Verify installation
-#      run: |
-#        /tmp/openssl-aarch64/bin/openssl version
+        make install
+
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: openssl-aarch64
-        path: /tmp/openssl-aarch64/
+        path: /tmp/openssl-aarch64/usr/local/ssl
